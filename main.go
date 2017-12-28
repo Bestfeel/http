@@ -27,7 +27,7 @@ const ICO = "data:image/vnd.microsoft.icon;base64,AAABAAEAICAAAAEAIACoEAAAFgAAAC
 
 var (
 	addr = flag.String("a", ":8000", "请输入服务端地址")
-	path = flag.String("p", ".", "请输入服务端地址")
+	path = flag.String("p", ".", "请输入静态目录地址")
 )
 
 func HandleHttp(w http.ResponseWriter, r *http.Request) {
