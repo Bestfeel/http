@@ -30,7 +30,7 @@ var (
 	path = flag.String("p", ".", "请输入静态目录地址")
 )
 
-func HandleHttp(w http.ResponseWriter, r *http.Request) {
+func HandleFuncHttp(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		w.Header().Add("Access-Control-Allow-Origin", "*")
 		w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -46,17 +46,21 @@ func HandleHttp(w http.ResponseWriter, r *http.Request) {
 		}
 		dec := base64.NewDecoder(base64.StdEncoding, strings.NewReader(ICO[i+1:]))
 		io.Copy(w, dec)
-		return
 	}
-	http.FileServer(http.Dir(*path)).ServeHTTP(w, r)
-	return
+}
 
+func HandleHttp(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		HandleFuncHttp(w, r)
+		h.ServeHTTP(w, r)
+	}
 }
 
 func main() {
 	flag.Parse()
 	fmt.Println(LOGO)
+	fileHandle := http.FileServer(http.Dir(*path))
 	log.Printf("Listening on %s,  path  %s", *addr, *path)
-	http.HandleFunc("/", HandleHttp)
+	go http.Handle("/", HandleHttp(fileHandle))
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
