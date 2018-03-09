@@ -31,13 +31,12 @@ var (
 )
 
 func HandleFuncHttp(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
-		w.Header().Add("Pragma", "no-cache")
-		w.Header().Add("Expires", "0")
-		log.Printf("%s %d %s", r.Method, 200, r.URL.Path)
-	}()
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Add("Pragma", "no-cache")
+	w.Header().Add("Expires", "0")
+	log.Printf("%s %d %s", r.Method, 200, r.URL.Path)
+
 	if r.URL.Path == "/favicon.ico" {
 		w.Header().Set("Content-Type", "image/x-icon;charset=UTF-8")
 		i := strings.Index(ICO, ",")
@@ -61,6 +60,6 @@ func main() {
 	fmt.Println(LOGO)
 	fileHandle := http.FileServer(http.Dir(*path))
 	log.Printf("Listening on %s,  path  %s", *addr, *path)
-	go http.Handle("/", HandleHttp(fileHandle))
+	http.Handle("/", HandleHttp(fileHandle))
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
